@@ -1,0 +1,1 @@
+python -m streamlit run app.py to run the program at local
