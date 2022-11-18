@@ -47,7 +47,7 @@ box-shadow:0 0 15px 5px #ccc; background-color: #a8f0c6;
 <p style="color:blue;"><span style="color:black;">&#127968;Address:</span>{}</p>
 <p style="color:blue;"><span style="color:black;">&#128222;Phone Number:</span>{}</p>
 <p style="color:blue;"><span style="color:black;">Category:</span>{}</p>
-<p style="color:blue;"><span style="color:black;"></span><a href="{}", target ="_blank" rel="noreferrer noopener"><img src="{}" alt="Place Image" width="300" height="300"></img></a></p>
+<p style="color:blue;"><span style="color:black;"></span><a href="{}", target ="_blank" rel="noreferrer noopener"><img src="{}" alt="Place Image" width="250" height="250"></img></a></p>
 </div>
 '''
 
@@ -108,7 +108,7 @@ elif choice == "Recommend":
                         phone_number = row[1][7]
                         category = row[1][8]
                         picture_link = row[1][9]
-                        stc.html(htmlResult.format(state, place_name, rating, description, website, location_link, address, phone_number, category, picture_link, picture_link), height=720 if not picture_link == "" else 450)
+                        stc.html(htmlResult.format(state, place_name, rating, description, website, location_link, address, phone_number, category, picture_link, picture_link), height=670 if not picture_link == "" else 450)
             except:
                 results = "Not Found"
                 st.warning(results)
