@@ -1,11 +1,8 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import random 
+import re
 import streamlit.components.v1 as stc
-from threading import Thread
-from streamlit.runtime.scriptrunner import add_script_run_ctx
-from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
 
 @st.cache(allow_output_mutation=True)
 def load_data(data):
@@ -31,8 +28,7 @@ def getState(state):
 @st.cache(allow_output_mutation=True)
 def getRecommend(search_term, category, state, rate1, rate2, df):
     df["Rating"] = pd.to_numeric(df["Rating"])
-    arr = []
-    results = df[(df.Category == category) & (df.State == state) & (df.Rating >= rate1) & (df.Rating <= rate2) & (df.Place_Name.str.contains(search_term))] 
+    results = df[(df.Category == category) & (df.State == state) & (df.Rating >= rate1) & (df.Rating <= rate2) & (df.Place_Name.str.contains(search_term,flags=re.IGNORECASE))] 
     recommend = results
     return recommend
 
@@ -46,18 +42,15 @@ box-shadow:0 0 15px 5px #ccc; background-color: #a8f0c6;
 <p style="color:blue;"><span style="color:black;">&#127961;Place Name:</span>{}</p>
 <p style="color:blue;"><span style="color:black;">&#127775;Rating:</span>{}</p>
 <p style="color:blue;"><span style="color:black;">&#128462;Description:</span>{}</p>
-<p style="color:blue;"><span style="color:black;">🔗</span><a href="{}",target="_blank">Website</a></p>
-<p style="color:blue;"><span style="color:black;">🔗</span><a href="{}",target="_blank">Location Link</a></p>
+<p style="color:blue;"><span style="color:black;">🔗</span><a href="{}", target="_blank" rel="noreferrer noopener">Website</a></p>
+<p style="color:blue;"><span style="color:black;">🔗</span><a href="{}", target="_blank" rel="noreferrer noopener">Location Link</a></p>
 <p style="color:blue;"><span style="color:black;">&#127968;Address:</span>{}</p>
 <p style="color:blue;"><span style="color:black;">&#128222;Phone Number:</span>{}</p>
 <p style="color:blue;"><span style="color:black;">Category:</span>{}</p>
-<p style="color:blue;"><span style="color:black;"></span><img src="{}" alt="Place Image" width="300" height="300"></a></p>
+<p style="color:blue;"><span style="color:black;"></span><a href="{}", target ="_blank" rel="noreferrer noopener"><img src="{}" alt="Place Image" width="300" height="300"></img></a></p>
 </div>
 '''
 
-#@st.experimental_singleton(suppress_st_warning=True)
-#@st.cache(allow_output_mutation=True, suppress_st_warning=True) 
-#def main():
 st.title("Place Recommender")
 menu = ["Home","Recommend","About"]
 choice = st.sidebar.selectbox("Menu",menu)
@@ -95,20 +88,15 @@ elif choice == "Recommend":
         elif state == "":
             st.error('Please select state', icon="🚨")
         if not search_term == "":
-            #try:
+            try:
                 results = getRecommend(search_term, category, state, rate1, rate2, df)
-                print(len(results))
                 if len(results) == 0:
                     results = "Not Found"
                     st.warning(results)
                 else:
                     st.subheader("Results")
-                    print("Results:")
-                    print(results)
                     if(len(results) > 5):
                         results = results.sample(n=5)
-                    print("Recommend 3 Places")
-                    print(results)
                     for row in results.iterrows():
                         state  = row[1][0]
                         place_name = row[1][1]
@@ -120,26 +108,12 @@ elif choice == "Recommend":
                         phone_number = row[1][7]
                         category = row[1][8]
                         picture_link = row[1][9]
-                        stc.html(htmlResult.format(state, place_name, rating, description, website, location_link, address, phone_number, category, picture_link),height=750)
-
-            #except:
-            #    results = "Not Found"
-            #    st.warning(results)
+                        stc.html(htmlResult.format(state, place_name, rating, description, website, location_link, address, phone_number, category, picture_link, picture_link), height=720 if not picture_link == "" else 450)
+            except:
+                results = "Not Found"
+                st.warning(results)
         else:
             st.error('Please enter search term', icon="🚨")
-    #st.dataframe(df.head(3500))
 else:
     st.subheader("About")
     st.text("Built with Streamlit & Pandas")
-
-
-#if __name__ == '__main__':
-    #thread = threading.Thread(target=main)
-    #main()
-    #ctx = get_script_run_ctx()
-    #add_script_run_ctx(ctx)
-    #t = Thread(target=main)
-    #ctx = get_script_run_ctx()
-    #add_script_run_ctx(t, ctx)
-    #t.start()
-    #print(t)
